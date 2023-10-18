@@ -62,6 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Future.error('Location services are disabled.');
   }
 
+  
+
   LocationPermission permission;
   permission = await Geolocator.requestPermission();
   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
