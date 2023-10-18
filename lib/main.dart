@@ -1,4 +1,8 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'geolocator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,7 +52,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool toggle = true;
-  void turnOn() {
+  Future<void> turnOn() async {
+
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled don't continue
+    // accessing the position and request users of the 
+    // App to enable the location services.
+    return Future.error('Location services are disabled.');
+  }
+
+  LocationPermission permission;
+  permission = await Geolocator.requestPermission();
+  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  print(position.latitude);
+  print(position.longitude);
+
     setState(() {
       toggle = true;
     });
