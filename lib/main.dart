@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,33 +52,103 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool toggle = true;
-  Future<void> turnOn() async {
+  Location location = Location();
+  LocationData? currentLocation;
+  StreamSubscription<LocationData>? _locationSubscription;
+  // final loc.Location location = loc.Location();
+  // StreamSubscription<loc.LocationData>? _locationSubscription;
 
-  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    // Location services are not enabled don't continue
-    // accessing the position and request users of the 
-    // App to enable the location services.
-    return Future.error('Location services are disabled.');
-  }
+  // Future<void> turnOn() async {
+  //   LocationPermission permission;
+  //   permission = await Geolocator.requestPermission();
 
+  //   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     // Location services are not enabled don't continue
+  //     // accessing the position and request users of the 
+  //     // App to enable the location services.
+  //     return Future.error('Location services are disabled.');
+  //   }
+
+  //   Position position = await Geolocator.getCurrentPosition();
+  //   print(position.latitude);
+  //   print(position.longitude);
+
+  //   setState(() {
+  //     toggle = true;
+  //   });
+  // }
+
+
+  // location.onLocationChanged.listen(
+  //   (newloc){
+  //     currentLocation = newloc
+  //   }
+  // );
   
-
-  LocationPermission permission;
-  permission = await Geolocator.requestPermission();
-  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  print(position.latitude);
-  print(position.longitude);
-
-    setState(() {
-      toggle = true;
+  void locationFirstVid() {
+    _locationSubscription = location.onLocationChanged.handleError((onError) {
+      print(onError);
+      _locationSubscription?.cancel();
+      setState(() {
+        _locationSubscription = null;
+      });
+    }).listen((LocationData currentlocation) async {
+      print(currentlocation.latitude);
+      // await FirebaseFirestore.instance.collection('location').doc('user1').set({
+      //   'latitude': currentlocation.latitude,
+      //   'longitude': currentlocation.longitude,
+      //   'name': 'john'
+      // }, SetOptions(merge: true));
     });
   }
+
+  void locationSecondVid() {
+    location.onLocationChanged.listen(
+      (newloc){
+        currentLocation = newloc;
+        print(currentLocation);
+        setState(() {});
+      }
+    );
+  }
+
+  void turnOn() {
+    setState(() {
+      toggle = false;
+    });
+  }
+
   void turnOff() {
     setState(() {
       toggle = false;
     });
   }
+
+
+  // Future<void> _listenLocation() async {
+  //   _locationSubscription = location.onLocationChanged.handleError((onError) {
+  //     print(onError);
+  //     _locationSubscription?.cancel();
+  //     setState(() {
+  //       _locationSubscription = null;
+  //     });
+  //   }).listen((loc.LocationData currentlocation) async {
+  //     print(currentlocation.latitude);
+  //     // await FirebaseFirestore.instance.collection('location').doc('user1').set({
+  //     //   'latitude': currentlocation.latitude,
+  //     //   'longitude': currentlocation.longitude,
+  //     //   'name': 'john'
+  //     // }, SetOptions(merge: true));
+  //   });
+  // }
+
+  // _stopListening() {
+  //   _locationSubscription?.cancel();
+  //   setState(() {
+  //     _locationSubscription = null;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +163,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(onPressed: () {turnOn();}, style: (toggle ? styleOn : styleOff), child: const Text('On')),
+            ElevatedButton(onPressed: () {locationFirstVid();}, style: (toggle ? styleOn : styleOff), child: const Text('First')),
+            ElevatedButton(onPressed: () {locationSecondVid();}, style: (toggle ? styleOn : styleOff), child: const Text('second')),
             ElevatedButton(onPressed: () {turnOff();}, style: (toggle ? styleOff : styleOn), child: const Text('Off')),
           ],
         ),
