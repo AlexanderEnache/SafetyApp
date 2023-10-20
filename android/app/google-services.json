@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "676250189840",
+    "project_id": "safetyapp-ac4a5",
+    "storage_bucket": "safetyapp-ac4a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676250189840:android:7ad7811df36bed5b8aca95",
+        "android_client_info": {
+          "package_name": "com.example.safeti"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx1BuLg7QQR7QS0fBYTkuolvZgtxPPrew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

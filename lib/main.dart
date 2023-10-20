@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,6 +57,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Location location = Location();
   LocationData? currentLocation;
   StreamSubscription<LocationData>? _locationSubscription;
+
+  // void initstate
+
   // final loc.Location location = loc.Location();
   // StreamSubscription<loc.LocationData>? _locationSubscription;
 
@@ -85,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //     currentLocation = newloc
   //   }
   // );
-  
+
   void locationFirstVid() {
     _locationSubscription = location.onLocationChanged.handleError((onError) {
       print(onError);
@@ -111,6 +116,24 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {});
       }
     );
+  }
+
+  Future<void> locationListen() async {
+    _locationSubscription = location.onLocationChanged.handleError((onError) {
+      print(onError);
+      _locationSubscription?.cancel();
+      setState(() {
+        _locationSubscription = null;
+      });
+    }).listen((LocationData currentlocation) async {
+      print(currentlocation.latitude);
+      print("currentlocation.latitude");
+      await FirebaseFirestore.instance.collection('location').doc('user1').set({
+        'latitude': currentlocation.latitude,
+        'longitude': currentlocation.longitude,
+        'name': 'john'
+      }, SetOptions(merge: true));
+    });
   }
 
   void turnOn() {
@@ -165,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             ElevatedButton(onPressed: () {locationFirstVid();}, style: (toggle ? styleOn : styleOff), child: const Text('First')),
             ElevatedButton(onPressed: () {locationSecondVid();}, style: (toggle ? styleOn : styleOff), child: const Text('second')),
+            ElevatedButton(onPressed: () {locationListen();}, style: (toggle ? styleOn : styleOff), child: const Text('Listen')),
             ElevatedButton(onPressed: () {turnOff();}, style: (toggle ? styleOff : styleOn), child: const Text('Off')),
           ],
         ),
